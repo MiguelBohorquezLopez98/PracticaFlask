@@ -14,8 +14,8 @@ pip install -U flask_wtf
 
 ## Correr programa
 En el archivo .env asegurarse de tener lo siguientes:
-''' FLASK_APP=app.py
+```FLASK_APP=app.py
 FLASK_ENV=development
-FLASK_DEBUG=1 ''' 
+FLASK_DEBUG=1```
 para luego usar el comando flask run y poder correr la pagina web
 
