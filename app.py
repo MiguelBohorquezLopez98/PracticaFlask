@@ -1,5 +1,6 @@
 from flask import Flask, redirect, url_for, request, render_template, \
     flash, session
+from forms import LoginForm
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "so-secret"
@@ -24,14 +25,23 @@ def about():
 
 @app.route("/login/", methods=["GET", "POST"])
 def login():
-    if request.method == "POST":
-        username = request.form["username"]
-        password = request.form["password"]
-        if username and password:
-            session["username"] = username
-            return redirect(url_for("dashboard", name=username))
-        flash("Por favor ingresa correctamente tus datos.", "error")
-    return render_template("login.html")
+    print(request.get_json())
+    print(request.json)
+    print(request.args["greeting"])  #error 400
+    print(request.args.get("greeting")) #none
+    return "Login"
+
+
+
+    # form = LoginForm()
+    # if form.validate_on_submit() and request.method == "POST":
+    #     username = request.form["username"]
+    #     password = request.form["password"]
+    #     if username and password:
+    #         session["username"] = username
+    #         return redirect(url_for("dashboard", name=username))
+    #     flash("Por favor ingresa correctamente tus datos.", "error")
+    # return render_template("login.html", form = form)
 
 @app.route("/profile/<name>/")    
 @app.route("/profile/")
