@@ -1,4 +1,5 @@
-##Crear entorno virtual
+#Crear entorno virtual
+
 python3 -m venv .venv
 
 ##Activar entorno virtual
