@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 
 from forms import LoginForm, SignupForm
+from models import User, db_user , get_user
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "so-secret"
@@ -14,6 +15,13 @@ def index():
 def signup():
     form = SignupForm()
     if form.validate_on_submit() and request.method == "POST":
+        firstname = request.form["firstname"]
+        lastname = request.form["lastname"]
+        email = request.form["email"]
+        password = request.form["password"]
+        user = User(firstname=firstname, lastname=lastname, email=email, password=password)
+        db_user.append(user)
+        print(db_user)
         return redirect(url_for("signin"))
     return render_template("signup.html", form=form)
 
@@ -22,7 +30,11 @@ def signup():
 def signin():
     form = LoginForm()
     if form.validate_on_submit() and request.method == "POST":
-        return render_template("signin.html")
+        email = request.form["email"]
+        password = request.form["password"]
+        user = get_user(email)
+        print(user)
+        #return render_template("signin.html")
     return render_template("signin.html", form=form)
 
 
