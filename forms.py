@@ -13,7 +13,7 @@ class SignupForm(FlaskForm):
     password = PasswordField(render_kw={"placeholder": "Contraseña" }, validators=[DataRequired(message="Ingresa tu contraseña")])
 
 class AddCourseForm(FlaskForm):
-    professor = StringField("Profesor:", validators=[DataRequired(message="Nombre del profesor")])
+    profesor = StringField("Profesor:", validators=[DataRequired(message="Nombre del profesor")])
     title = StringField("Titulo:", validators=[DataRequired(message="Ingresa el título del curso")])
     description = TextAreaField("Descripción:", validators=[DataRequired(message="Ingresa la descripción")])
-    link = StringField("Url del curso:", validators=[DataRequired(message="Ingresa la url del curso")])
+    url = StringField("Url del curso:", validators=[DataRequired(message="Ingresa la url del curso")])
