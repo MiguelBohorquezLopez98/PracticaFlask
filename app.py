@@ -1,11 +1,18 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 from forms import LoginForm, SignupForm, AddCourseForm
-from models import User, db_user, get_user
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "so-secret"
+# "postgresql://username:password@localhost:5432/edteamdb"
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://postgres:12345@localhost:5432/edteamdb"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
+from models import User, Courses
 
+migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = "signin"
@@ -25,9 +32,10 @@ def signup():
         lastname = request.form["lastname"]
         email = request.form["email"]
         password = request.form["password"]
-        user = User(id=len(db_user) + 1, firstname=firstname, lastname=lastname,
-                    email=email, password=password)
-        db_user.append(user)
+        user = User(firstname=firstname, lastname=lastname,
+                    email=email)
+        user.set_password(password)
+        user.save()
         return redirect(url_for("signin"))
     return render_template("signup.html", form=form)
 
@@ -40,7 +48,7 @@ def signin():
     if form.validate_on_submit() and request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
-        user = get_user(email)
+        user = User.get_by_email(email)
         if user is not None and user.verify_password(password):
             login_user(user)
             return redirect(url_for("dashboard"))
@@ -62,31 +70,41 @@ def user_account():
 def add_courses():
     form = AddCourseForm()
     if form.validate_on_submit():
+        profesor = request.form["profesor"]
+        title = request.form["title"]
+        description = request.form["description"]
+        url = request.form["url"]
+        course = Courses(profesor=profesor, title=title, description=description, url=url, user_login_id=current_user.id)
+        course.save()
         return redirect(url_for("dashboard"))
     return render_template("add_course.html", form=form)
 
 @app.route("/dashboard/courses")
 @login_required
 def courses():
-    courses = [{"professor": "Kevin Guzmán", 
-                "title": "Fundamentos de Flask",
-                "description": "Es un curso donde aprenderemos conceptos básicos del desarrollo utilizando la excelente herramienta de FLASK",
-                "url": "https://ed.team/cursos/flask"}, 
-               {"professor": "Diego Adrian Barra Paredes", 
-                "title": "Curso: React Hooks con TypeScript",
-                "description": "A menudo cuando escribes componentes dentro de las clases, te encuentras que con el tiempo se vuelven complejos, difíciles de organizar, y la lógica de estado entre los componentes no la puedes reutilizar.",
-                "url": "https://ed.team/cursos/react-hooks"}]
+    courses = Courses.get_all()
     return render_template("courses.html", courses=courses)
 
 @app.route("/dashboard/course/delete/<id>")
 @login_required
 def delete_course(id=None):
-    return f"Deleted Course with id {id}"
+    course = Courses.get_by_id(id)
+    course.delete()
+    return redirect(url_for('courses'))
 
-@app.route("/dashboard/course/update/<id>")
+@app.route("/dashboard/course/update/<id>", methods=["GET", "POST"])
 @login_required
 def update_course(id=None):
-    return f"Updated Course with id {id}"
+    course = Courses.get_by_id(id)
+    form = AddCourseForm(obj=course)
+    if form.validate_on_submit():
+        course.profesor= request.form["profesor"]
+        course.title= request.form["title"]
+        course.description= request.form["description"]
+        course.url= request.form["url"]
+        course.save()
+        return redirect(url_for('courses'))
+    return render_template('add_course.html', form=form)
 
 @app.route("/logout/")
 @login_required
@@ -97,7 +115,4 @@ def logout():
 # Cargar usuarios
 @login_manager.user_loader
 def load_user(user_id):
-    for user in db_user:
-        if user.id == int(user_id):
-            return user
-        return None
+    return User.get_by_id(int(user_id))
