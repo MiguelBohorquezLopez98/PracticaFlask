@@ -9,9 +9,9 @@
         <form method="POST" novalidate class="add-course-form">
             {{ form.csrf_token() }}
             <div class="form-group">
-                {{ form.professor.label }} <br>
-                {{ form.professor}}
-                {% for error in form.professor.errors %}
+                {{ form.profesor.label }} <br>
+                {{ form.profesor}}
+                {% for error in form.profesor.errors %}
                     <span class="error">{{ error }}</span>
                 {% endfor %}
             </div>
@@ -30,9 +30,9 @@
                 {% endfor %}
             </div>
             <div class="form-group">
-                {{ form.link.label }} <br>
-                {{ form.link }}
-                {% for error in form.link.errors %}
+                {{ form.url.label }} <br>
+                {{ form.url }}
+                {% for error in form.url.errors %}
                     <span class="error">{{ error }}</span>
                 {% endfor %}
             </div>
