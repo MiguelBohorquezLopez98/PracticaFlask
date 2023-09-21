@@ -11,7 +11,7 @@
         <div class="course">
             <div class="course-property">
                 <i class="fa-solid fa-user-tie"></i>
-                <p>{{ course.professor }}</p>
+                <p>{{ course.profesor }}</p>
             </div>
             <div class="course-property">
                 <i class="fa-solid fa-pen-clip"></i>
@@ -26,8 +26,8 @@
                 <a href="{{ course.url }}" target="_blank">Ir al curso</a>
             </div>
             <div class="actions">
-                <a class="delete" href="{{ url_for('delete_course', id=course.title) }}">Borrar</a>
-                <a class="update" href="{{ url_for('update_course', id=course.title) }}">Actualizar</a>
+                <a class="delete" href="{{ url_for('delete_course', id=course.id) }}">Borrar</a>
+                <a class="update" href="{{ url_for('update_course', id=course.id) }}">Actualizar</a>
             </div>
         </div>
         {% endfor %}
